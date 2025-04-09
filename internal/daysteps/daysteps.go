@@ -10,12 +10,14 @@ import (
 	"github.com/Yandex-Practicum/tracker/internal/spentenergy"
 )
 
+// DaySteps содержит данные о дневной прогулке.
 type DaySteps struct {
 	Steps    int
 	Duration time.Duration
 	personaldata.Personal
 }
 
+// Parse парсит строку с данными о прогулке в формате "шаги,длительность".
 func (ds *DaySteps) Parse(datastring string) (err error) {
 	parts := strings.Split(datastring, ",")
 	if len(parts) != 2 {
@@ -26,8 +28,6 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 	if err != nil {
 		return fmt.Errorf("ошибка при парсинге шагов: %w", err)
 	}
-
-	// Проверка, что количество шагов больше нуля
 	if ds.Steps <= 0 {
 		return fmt.Errorf("количество шагов должно быть больше нуля")
 	}
@@ -40,7 +40,6 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 	if ds.Duration <= 0 {
 		return fmt.Errorf("продолжительность хотьбы должна быть больше нуля")
 	}
-
 	return nil
 }
 

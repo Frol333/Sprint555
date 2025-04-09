@@ -10,6 +10,7 @@ import (
 	"github.com/Yandex-Practicum/tracker/internal/spentenergy"
 )
 
+// Training структура для хранения данных о тренировке.
 type Training struct {
 	Steps        int
 	TrainingType string
@@ -26,24 +27,14 @@ func (t *Training) Parse(datastring string) (err error) {
 
 	t.Steps, err = strconv.Atoi(data[0])
 	if err != nil {
-		return fmt.Errorf("некорректное количество шагов: %w", err)
-	}
-
-	// Проверяем, что количество шагов не меньше или равно нулю.
-	if t.Steps <= 0 {
-		return fmt.Errorf("количество шагов должно быть больше нуля")
+		return fmt.Errorf("ошибка преобразования шагов: %w", err)
 	}
 
 	t.TrainingType = data[1]
 
 	t.Duration, err = time.ParseDuration(data[2])
 	if err != nil {
-		return fmt.Errorf("некорректная длительность: %w", err)
-	}
-
-	// Проверяем, что длительность не меньше или равна нулю.
-	if t.Duration <= 0 {
-		return fmt.Errorf("длительность должна быть больше нуля")
+		return fmt.Errorf("ошибка преобразования длительности: %w", err)
 	}
 
 	return nil
@@ -51,29 +42,29 @@ func (t *Training) Parse(datastring string) (err error) {
 
 // ActionInfo формирует строку с информацией о тренировке.
 func (t Training) ActionInfo() (string, error) {
-	// Вычисляем пройденную дистанцию
 	distance := spentenergy.Distance(t.Steps, t.Personal.Height)
-
-	// Вычисляем среднюю скорость
-	steps := 0 // тут steps не нужен, так как его нет в spentenergy.MeanSpeed
-	speed := spentenergy.MeanSpeed(steps, distance, t.Duration)
+	speed := spentenergy.MeanSpeed(t.Steps, distance, t.Duration)
 
 	var calories float64
+	var err error // Объявляем переменную для хранения ошибки
 
-	// В зависимости от типа тренировки вычисляем количество сожженных калорий
 	switch t.TrainingType {
 	case "Бег":
-		calories, _ = spentenergy.RunningSpentCalories(t.Steps, t.Personal.Weight, t.Personal.Height, t.Duration)
+		calories, err = spentenergy.RunningSpentCalories(t.Steps, t.Personal.Weight, t.Personal.Height, t.Duration)
+		if err != nil {
+			return "", fmt.Errorf("ошибка при расчете калорий для бега: %w", err) // Возвращаем ошибку, если она возникла
+		}
 	case "Ходьба":
-		calories, _ = spentenergy.WalkingSpentCalories(t.Steps, t.Personal.Weight, t.Personal.Height, t.Duration)
+		calories, err = spentenergy.WalkingSpentCalories(t.Steps, t.Personal.Weight, t.Personal.Height, t.Duration)
+		if err != nil {
+			return "", fmt.Errorf("ошибка при расчете калорий для ходьбы: %w", err) // Возвращаем ошибку, если она возникла
+		}
 	default:
-		// Возвращаем ошибку, если тип тренировки неизвестен
-		return "", fmt.Errorf("неизвестный тип тренировки: %s", t.TrainingType)
+		return "", fmt.Errorf("неизвестный тип тренировки: %s", t.TrainingType) // Возвращаем ошибку для неизвестного типа тренировки
 	}
 
-	// Формируем строку с информацией о тренировке
 	result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
 		t.TrainingType, t.Duration.Hours(), distance, speed, calories)
 
-	return result, nil
+	return result, nil // Возвращаем результат и nil (отсутствие ошибки)
 }
