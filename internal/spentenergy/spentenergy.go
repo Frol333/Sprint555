@@ -37,7 +37,7 @@ func MeanSpeed(steps int, height float64, duration time.Duration) float64 {
 
 // RunningSpentCalories рассчитывает потраченные калории при беге.
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
-	if weight <= 0 || height <= 0 || duration <= 0 {
+	if steps <= 0 || weight <= 0 || height <= 0 || duration <= 0 {
 		return 0, errors.New(errInvalidInput)
 	}
 
@@ -49,7 +49,7 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 
 // WalkingSpentCalories рассчитывает потраченные калории при ходьбе.
 func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
-	if weight <= 0 || height <= 0 || duration <= 0 {
+	if steps <= 0 || weight <= 0 || height <= 0 || duration <= 0 {
 		return 0, errors.New(errInvalidInput)
 	}
 

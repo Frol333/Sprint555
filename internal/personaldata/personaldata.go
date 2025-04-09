@@ -1,5 +1,7 @@
 package personaldata
 
+import "fmt"
+
 // Personal - структура, содержащая персональные данные пользователя.
 type Personal struct {
 	Name   string  // Имя пользователя.
@@ -9,7 +11,6 @@ type Personal struct {
 
 // Print - метод структуры Personal, выводящий данные пользователя на экран.
 func (p Personal) Print() {
-	println("Имя:", p.Name)    // Вывод имени пользователя.
-	println("Вес:", p.Weight)  // Вывод веса пользователя.
-	println("Рост:", p.Height) // Вывод роста пользователя.
+	fmt.Printf("Имя: %s\nВес: %.2f кг.\nРост: %.2f м.\n\n", p.Name, p.Weight, p.Height) // Вывод имени пользователя.
+
 }

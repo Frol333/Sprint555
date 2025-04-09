@@ -29,21 +29,25 @@ func (t *Training) Parse(datastring string) (err error) {
 	if err != nil {
 		return fmt.Errorf("ошибка преобразования шагов: %w", err)
 	}
+	if t.Steps <= 0 {
+		return fmt.Errorf("шаги меньше или равна 0")
+	}
 
 	t.TrainingType = data[1]
 
-	t.Duration, err = time.ParseDuration(data[2])
-	if err != nil {
+	if t.Duration, err = time.ParseDuration(data[2]); err != nil {
 		return fmt.Errorf("ошибка преобразования длительности: %w", err)
 	}
-
+	if t.Duration <= 0 {
+		return fmt.Errorf("длительность меньше или равна 0")
+	}
 	return nil
 }
 
 // ActionInfo формирует строку с информацией о тренировке.
 func (t Training) ActionInfo() (string, error) {
 	distance := spentenergy.Distance(t.Steps, t.Personal.Height)
-	speed := spentenergy.MeanSpeed(t.Steps, distance, t.Duration)
+	speed := spentenergy.MeanSpeed(t.Steps, t.Personal.Height, t.Duration)
 
 	var calories float64
 	var err error // Объявляем переменную для хранения ошибки
@@ -63,7 +67,7 @@ func (t Training) ActionInfo() (string, error) {
 		return "", fmt.Errorf("неизвестный тип тренировки: %s", t.TrainingType) // Возвращаем ошибку для неизвестного типа тренировки
 	}
 
-	result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+	result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
 		t.TrainingType, t.Duration.Hours(), distance, speed, calories)
 
 	return result, nil // Возвращаем результат и nil (отсутствие ошибки)

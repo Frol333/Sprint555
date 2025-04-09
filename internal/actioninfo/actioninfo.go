@@ -20,6 +20,11 @@ func Info(dataset []string, dp DataParser) {
 			continue
 		}
 		// Формируем и выводим информацию об активности.
-		fmt.Println(dp.ActionInfo())
+		action, err := dp.ActionInfo()
+		if err != nil {
+			fmt.Printf("Ошибка получения информации о прогулке")
+		}
+		fmt.Println(action)
 	}
+
 }
